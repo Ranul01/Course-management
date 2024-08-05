@@ -20,9 +20,6 @@ export default function Requests() {
   const data = location.state;
   const navigate = useNavigate();
 
-  /*const accountSid = 'AC496a16d2309e1d84ef59806581aa78fd';
-  const authToken = 'a2453b9535e6f2849644ef5db8b9ab69';
-  const client = twilio(accountSid, authToken);*/
 
   function sendData(e) {
     e.preventDefault();
