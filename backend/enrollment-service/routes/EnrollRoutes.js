@@ -2,8 +2,8 @@ const express = require("express");
 const Enrollment = require("../modules/EnrollmentModule");
 const sendEmail = require("../utils/sendEmail");
 const router = express.Router();
-const accountSid = ACCSID;
-const authToken = 'a2453b9535e6f2849644ef5db8b9ab69';
+const accountSid = process.env.ACCSID;
+const authToken = process.env.AUTHTOKEN;
 const client = require('twilio')(accountSid, authToken);
 
 
