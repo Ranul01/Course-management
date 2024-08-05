@@ -1,0 +1,97 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo
+    container_name: mongo_c
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+  courseservice:
+    build: ./course-server
+    container_name: courseservice_c
+    ports:
+      - "8072:8072"
+    depends_on:
+      - mongo
+    volumes:
+      - ./courseservice:/app
+      - /app/node_modules
+    env_file:
+      - ./courseservice/.env
+    environment:
+      - MONGO_URL=mongodb://mongo_c:27017/mydb
+  customerservice:
+    build: ./customer-service
+    container_name: customerservice_c
+    ports:
+      - "8072:8072"
+    depends_on:
+      - mongo
+    env_file:
+      - ./customerservice/.env
+    volumes:
+      - ./courseservice:/app
+      - /app/node_modules
+    environment:
+      - MONGO_URL=mongodb://mongo_c:27017/mydb
+  paymentservice:
+    build: ./payment-service
+    container_name: paymentservice_c
+    ports:
+      - "8073:8073"
+    depends_on:
+      - mongo
+    env_file:
+      - ./paymentservice/.env
+    volumes:
+      - ./paymentservice:/app
+      - /app/node_modules
+    environment:
+      - MONGO_URL=mongodb://mongo_c:27017/mydb
+  enrollmentservice:
+    build: ./enrollment-service
+    container_name: enrollmentservice_c
+    ports:
+      - "8073:8073"
+    depends_on:
+      - mongo
+    env_file:
+      - ./enrollmentservice/.env
+    volumes:
+      - ./enrollmentservice:/app
+      - /app/node_modules
+    environment:
+      - MONGO_URL=mongodb://mongo_c:27017/mydb
+  gateway:
+    build: ./gateway
+    container_name: gateway_c
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+      - api
+    env_file:
+      - ./gateway/.env
+    volumes:
+      - ./gateway:/app
+      - ./enrollmentservice:/app
+      - ./customerservice:/app
+      - ./courseservice:/app
+      - ./paymentservice:/app
+      - /app/node_modules
+    environment:
+      - MONGO_URL=mongodb://mongo_c:27017/mydb
+  nginx-proxy:
+    build:
+      dockerfile: Dockerfile
+      context: ./proxy
+    depends_on:
+      - enrollment
+      - courseservice
+      - customerservice
+      - paymentservice
+    ports:
+      - 50:50
+volumes:
+  mongo-data:
